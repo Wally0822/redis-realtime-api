@@ -26,7 +26,6 @@ Redis를 활용한 OTP 인증, 실시간 랭킹, API 속도 제한, 실시간 �
 - Redis에 `otp:{phone}` 형태로 저장 (TTL: 3분)
 - 입력한 OTP 값이 Redis에 저장된 값과 일치하는지 확인
 - Redis에서 자동 삭제 또는 수동 삭제
-- 예비: 외부 SMS 게이트웨이 연동 예정 (Twilio/Naver Cloud)
 
 ---
 
