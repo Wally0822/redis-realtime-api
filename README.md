@@ -57,17 +57,19 @@ Redis를 활용한 OTP 인증, 실시간 랭킹, API 속도 제한, 실시간 �
 
 ---
 
-### ✅ 2. 전체 랭킹 조회 결과  
+### ✅ 2. 전체 랭킹 조회 결과
+
 Redis ZSET 데이터를 통해 전체 사용자 점수와 순위를 조회한 결과입니다.
 
-![랭킹 전체 조회 결과](src/main/resources/static/screenshots/ranking-result-step2.png)
+![전체 랭킹 조회 결과](src/main/resources/static/screenshots/ranking-lookup-step2.png)
 
 ---
 
-### ✅ 3. 개인 랭킹 조회 결과  
+### ✅ 3. 개인 랭킹 조회 결과
+
 특정 사용자 ID를 입력하여 해당 사용자의 점수 및 순위를 확인한 화면입니다.
 
-![개인 랭킹 조회](src/main/resources/static/screenshots/ranking-user-rank-result-step2.png)
+![개인 랭킹 조회 결과](src/main/resources/static/screenshots/ranking-personal-lookup-step2.png)
 
 ---
 
