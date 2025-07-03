@@ -6,71 +6,116 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-6">
-  <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+  <!-- ✅ OTP 인증 대시보드 -->
+  <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow mb-6">
     <h1 class="text-2xl font-bold mb-4">📲 Redis OTP 대시보드</h1>
 
-    <!-- ✅ Redis 연결 상태 확인 -->
+    <!-- Redis 연결 상태 확인 -->
     <button onclick="checkRedis()" class="bg-purple-500 text-white px-4 py-2 rounded mb-2">
       Redis 연결 상태 확인
     </button>
     <p id="redisStatus" class="mb-4 text-sm text-gray-700"></p>
 
-    <!-- ✅ Redis 연결 시도 -->
+    <!-- Redis 연결 시도 -->
     <button onclick="connectRedis()" class="bg-yellow-500 text-white px-4 py-2 rounded mb-2">
       Redis 연결 시도
     </button>
     <p id="connectStatus" class="mb-4 text-sm text-gray-700"></p>
 
-    <!-- ✅ Redis 키 목록 보기 -->
+    <!-- Redis 키 목록 -->
     <button onclick="getRedisKeys()" class="bg-gray-700 text-white px-4 py-2 rounded mb-2">
       Redis 키 목록 보기
     </button>
     <div id="keysList" class="mb-4 text-sm text-gray-700 whitespace-pre-wrap"></div>
 
-    <!-- ✅ OTP 전송 -->
+    <!-- OTP 입력 및 전송 -->
     <input id="phoneNumber" type="text" placeholder="전화번호 입력" class="border p-2 w-full mb-2" />
     <button onclick="sendOtp()" class="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full">OTP 전송</button>
 
-    <!-- ✅ OTP 확인 -->
+    <!-- OTP 확인 -->
     <input id="otp" type="text" placeholder="인증번호 입력" class="border p-2 w-full mb-2" />
     <button onclick="verifyOtp()" class="bg-green-500 text-white px-4 py-2 rounded w-full">OTP 확인</button>
 
     <p id="result" class="mt-4 text-sm text-gray-700"></p>
   </div>
 
+ <!-- ✅ 랭킹 시스템 대시보드 -->
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow mt-8">
+  <h2 class="text-xl font-semibold mb-4">🏆 실시간 랭킹 시스템</h2>
+
+  <!-- 더미 데이터 삽입 -->
+  <input type="number" id="userCount" placeholder="가데이터 사용자 수 (예: 20)" class="border p-2 mb-2 w-full" />
+  <button onclick="insertDummyRanking()" class="bg-gray-800 text-white px-4 py-2 rounded mb-2 w-full">
+    가데이터 삽입
+  </button>
+
+  <!-- 전체 점수 삭제 -->
+  <button onclick="deleteRanking()" class="bg-red-500 text-white px-4 py-2 rounded mb-2 w-full">
+    전체 점수 삭제
+  </button>
+
+  <!-- 전체 랭킹 조회 -->
+  <button onclick="getRanking()" class="bg-indigo-500 text-white px-4 py-2 rounded mb-2 w-full">
+    전체 랭킹 조회
+  </button>
+
+  <!-- 개인 랭킹 조회 -->
+  <input type="text" id="targetUserId" placeholder="조회할 사용자 ID (예: user1)" class="border p-2 w-full mb-2" />
+  <button onclick="getUserRank()" class="bg-yellow-600 text-white px-4 py-2 rounded w-full">
+    개인 랭킹 조회
+  </button>
+
+  <!-- 결과 출력 영역 -->
+  <pre id="rankingResult" class="mt-4 bg-gray-100 p-3 rounded text-sm overflow-x-auto whitespace-pre-wrap"></pre>
+
+  <hr class="my-4" />
+
+  <!-- 점수 변경 -->
+  <h2 class="text-lg font-semibold mb-2">✏️ 점수 변경</h2>
+  <input type="text" id="updateUserId" placeholder="사용자 ID (예: user1)" class="border p-2 w-full mb-2" />
+  <input type="number" id="newScore" placeholder="새 점수 (예: 120)" class="border p-2 w-full mb-2" />
+  <button onclick="updateScore()" class="bg-green-700 text-white px-4 py-2 rounded w-full">
+    점수 변경
+  </button>
+</div>
+
   <script>
+    // ✅ Redis Ping
     async function checkRedis() {
       try {
         const res = await fetch('/api/redis/ping');
         const text = await res.text();
-        document.getElementById('redisStatus').innerHTML = '✅ 연결됨: ' + text;
+        document.getElementById('redisStatus').innerHTML = '🟢 연결됨: ' + text;
       } catch (err) {
-        document.getElementById('redisStatus').innerHTML = '❌ 실패: ' + err.message;
+        document.getElementById('redisStatus').innerHTML = '🔴 실패: ' + err.message;
       }
     }
 
+    // ✅ Redis 연결 시도
     async function connectRedis() {
       try {
         const res = await fetch('/api/redis/connect', {
           method: 'POST',
         });
         const text = await res.text();
-        document.getElementById('connectStatus').innerHTML = '✅ 연결 성공: ' + text;
+        document.getElementById('connectStatus').innerHTML = '🟢 연결 성공: ' + text;
       } catch (err) {
-        document.getElementById('connectStatus').innerHTML = '❌ 연결 실패: ' + err.message;
+        document.getElementById('connectStatus').innerHTML = '🔴 연결 실패: ' + err.message;
       }
     }
 
+    // ✅ Redis 키 조회
     async function getRedisKeys() {
       try {
         const res = await fetch('/api/redis/keys');
         const json = await res.json();
         document.getElementById('keysList').innerText = '📦 저장된 키 목록:\n' + json.join('\n');
       } catch (err) {
-        document.getElementById('keysList').innerText = '❌ 키 조회 실패: ' + err.message;
+        document.getElementById('keysList').innerText = '🔴 키 조회 실패: ' + err.message;
       }
     }
 
+    // ✅ OTP 전송
     async function sendOtp() {
       const phone = document.getElementById('phoneNumber').value;
       const res = await fetch('/api/otp/send', {
@@ -82,6 +127,7 @@
       document.getElementById('result').innerText = '📤 전송 결과: ' + text;
     }
 
+    // ✅ OTP 확인
     async function verifyOtp() {
       const phone = document.getElementById('phoneNumber').value;
       const otp = document.getElementById('otp').value;
@@ -93,6 +139,58 @@
       const text = await res.text();
       document.getElementById('result').innerText = '🔒 인증 결과: ' + text;
     }
+
+    // ✅ 가데이터 삽입
+    async function insertDummyRanking() {
+      const count = document.getElementById('userCount').value || 10;
+      const res = await fetch(`/api/ranking/init?count=${count}`, { method: 'POST' });
+      const text = await res.text();
+      document.getElementById('rankingResult').innerText = text;
+    }
+
+    // ✅ 전체 점수 삭제
+    async function deleteRanking() {
+      const res = await fetch('/api/ranking/clear', { method: 'DELETE' });
+      const text = await res.text();
+      document.getElementById('rankingResult').innerText = text;
+    }
+
+    // ✅ 전체 랭킹 조회
+    async function getRanking() {
+      const res = await fetch('/api/ranking/top');
+      const data = await res.json();
+      const html = data.map((e, i) => `${i + 1}위: ${e.userId} (${e.score})`).join('\n');
+      document.getElementById('rankingResult').innerText = html;
+    }
+
+    // ✅ 개인 랭킹 조회
+    async function getUserRank() {
+      const userId = document.getElementById('targetUserId').value;
+      if (!userId) {
+        document.getElementById('rankingResult').innerText = '❗ 사용자 ID를 입력하세요.';
+        return;
+      }
+      const res = await fetch(`/api/ranking/rank/${userId}`);
+      const data = await res.json();
+      if (data.error) {
+        document.getElementById('rankingResult').innerText = '❌ ' + data.error;
+      } else {
+        document.getElementById('rankingResult').innerText =
+          `👤 사용자: ${data.userId}\n🏆 랭킹: ${data.rank}위\n🧮 점수: ${data.score}`;
+      }
+    }
+
+    // ✅ 지정 사용자 점수 변경
+    async function updateScore() {
+    const userId = document.getElementById('updateUserId').value;
+    const score = document.getElementById('newScore').value;
+
+    const res = await fetch(`/api/ranking/update?userId=${userId}&newScore=${score}`, {
+      method: 'PATCH',
+    });
+    const text = await res.text();
+    document.getElementById('rankingResult').innerText = text;
+  }
   </script>
 </body>
 </html>
