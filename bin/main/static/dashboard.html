@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redis 실시간 대시보드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+    <h1 class="text-2xl font-bold mb-4">📲 Redis OTP 대시보드</h1>
+
+    <!-- ✅ Redis 연결 상태 확인 -->
+    <button onclick="checkRedis()" class="bg-purple-500 text-white px-4 py-2 rounded mb-2">
+      Redis 연결 상태 확인
+    </button>
+    <p id="redisStatus" class="mb-4 text-sm text-gray-700"></p>
+
+    <!-- ✅ Redis 연결 시도 -->
+    <button onclick="connectRedis()" class="bg-yellow-500 text-white px-4 py-2 rounded mb-2">
+      Redis 연결 시도
+    </button>
+    <p id="connectStatus" class="mb-4 text-sm text-gray-700"></p>
+
+    <!-- ✅ Redis 키 목록 보기 -->
+    <button onclick="getRedisKeys()" class="bg-gray-700 text-white px-4 py-2 rounded mb-2">
+      Redis 키 목록 보기
+    </button>
+    <div id="keysList" class="mb-4 text-sm text-gray-700 whitespace-pre-wrap"></div>
+
+    <!-- ✅ OTP 전송 -->
+    <input id="phoneNumber" type="text" placeholder="전화번호 입력" class="border p-2 w-full mb-2" />
+    <button onclick="sendOtp()" class="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full">OTP 전송</button>
+
+    <!-- ✅ OTP 확인 -->
+    <input id="otp" type="text" placeholder="인증번호 입력" class="border p-2 w-full mb-2" />
+    <button onclick="verifyOtp()" class="bg-green-500 text-white px-4 py-2 rounded w-full">OTP 확인</button>
+
+    <p id="result" class="mt-4 text-sm text-gray-700"></p>
+  </div>
+
+  <script>
+    async function checkRedis() {
+      try {
+        const res = await fetch('/api/redis/ping');
+        const text = await res.text();
+        document.getElementById('redisStatus').innerHTML = '✅ 연결됨: ' + text;
+      } catch (err) {
+        document.getElementById('redisStatus').innerHTML = '❌ 실패: ' + err.message;
+      }
+    }
+
+    async function connectRedis() {
+      try {
+        const res = await fetch('/api/redis/connect', {
+          method: 'POST',
+        });
+        const text = await res.text();
+        document.getElementById('connectStatus').innerHTML = '✅ 연결 성공: ' + text;
+      } catch (err) {
+        document.getElementById('connectStatus').innerHTML = '❌ 연결 실패: ' + err.message;
+      }
+    }
+
+    async function getRedisKeys() {
+      try {
+        const res = await fetch('/api/redis/keys');
+        const json = await res.json();
+        document.getElementById('keysList').innerText = '📦 저장된 키 목록:\n' + json.join('\n');
+      } catch (err) {
+        document.getElementById('keysList').innerText = '❌ 키 조회 실패: ' + err.message;
+      }
+    }
+
+    async function sendOtp() {
+      const phone = document.getElementById('phoneNumber').value;
+      const res = await fetch('/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: phone }),
+      });
+      const text = await res.text();
+      document.getElementById('result').innerText = '📤 전송 결과: ' + text;
+    }
+
+    async function verifyOtp() {
+      const phone = document.getElementById('phoneNumber').value;
+      const otp = document.getElementById('otp').value;
+      const res = await fetch('/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: phone, otp }),
+      });
+      const text = await res.text();
+      document.getElementById('result').innerText = '🔒 인증 결과: ' + text;
+    }
+  </script>
+</body>
+</html>
